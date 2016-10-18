@@ -1,6 +1,11 @@
-from app import db
+from flask import Flask
+from app import app, db
+from sqlalchemy import create_engine
 
-class User(db.Model):
+
+engine = create_engine('sqlite:///db/scott.db')
+
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     email = db.Column(db.String(60), unique=True)
@@ -21,11 +26,9 @@ class Stores(db.Model):
     __tablename__ = 'stores'
     id = db.Column('store_id', db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    Classification = db.Column(db.String(15))
-    Products = db.Column(db.Text)
-    users = db.relationship(
-                            Users,
-                            backref=db.backref('stores', lazy='dynamic'))
+    classification = db.Column(db.String(15))
+    products = db.Column(db.Text)
+    users = db.relationship(Users, backref=db.backref('stores', lazy='dynamic'))
     '''
     Defines the constructor for the stores class
     '''
@@ -47,9 +50,9 @@ class Products(db.Model):
     Classification = db.Column(db.String(40))
     Products = db.Column(db.Text)
     store_id = db.Column(db.Integer, db.ForeignKey('stores.store_id'))
-    stores = db.relationship(
-                            Stores,
-                            backref=db.backref('Products', lazy='dynamic'))
+    # stores = db.relationship(
+    #                         Stores,
+    #                         backref=db.backref('Products', lazy='dynamic'))
 
     '''
     Defines the constructor for the products class
@@ -61,3 +64,5 @@ class Products(db.Model):
 
     def __repr__(self):
         return '<Product %r>' % self.Classification
+
+
