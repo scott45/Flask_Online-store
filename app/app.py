@@ -6,7 +6,6 @@ from sqlalchemy.ext.declarative import declarative_base
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 @app.route('/')
 def hello_world():
