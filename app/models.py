@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     # stores = db.relationship('Stores', backref='users')
 
     '''
-    Defines the constructor for the users class
+    Defines the constructor for the user class
     '''
     def __init__(self, name, email):
         self.name = fname
@@ -35,8 +35,6 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return '<Store %r>' % self.name
-
-
 class Stores(db.Model):
     '''
     Defines the store model which will be mapped
