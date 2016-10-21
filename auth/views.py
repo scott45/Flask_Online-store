@@ -6,7 +6,7 @@ from ..models import Users
 from .forms import LoginForm, RegistrationForm
 
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth.route('/', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
     if form.validate_on_submit():
@@ -16,7 +16,6 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             user.authenticated = True
             login_user(user, form.remember.data)
-            flash('Welcome %s' % user.username)
         # next_is_valid should check if the user has valid
         # permission to access the `next` url
             return redirect(request.args.get('next') or url_for('store.index'))
@@ -35,15 +34,13 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/signup', methods=['GET', 'POST'])
-def signup():
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
     form = RegistrationForm(request.form)
     if form.validate_on_submit():
-        user = Users(form.first_name.data,
-                     form.last_name.data,
-                     form.username.data,
+        user = Users(form.user_name.data,
+                     form.email.data,
                      form.password.data,
-                     form.phone.data
                      )
         db.session.add(user)
         db.session.commit()
