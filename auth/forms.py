@@ -12,30 +12,21 @@ class LoginForm(Form):
     # 'keep me logged in'
     username = StringField('Username',
                            [validators.Required(
-                            message='Kindly Enter your username')]
+                           )]
                            )
     password = PasswordField('Password', [validators.Required()])
-    remember = BooleanField('Keep me logged in.')
-    submit = SubmitField('Log In')
+    submit = SubmitField('Submit')
 
 
-class RegistrationForm(LoginForm):
-    '''This class creates a registration form.
-    '''
-
-    first_name = StringField('First Name', [validators.Required()])
-    last_name = StringField('Last Name', [validators.Required()])
-    phone = StringField('Phone Number')
-    username = StringField('Username', [validators.Required()])
-
-    password = PasswordField('Password', [validators.Required(),
-                                          validators.EqualTo(
-        'password_confirmation',
-        'Passwords do not match.'
-    )])
-    # check if Passwords match
-    password_confirmation = PasswordField('Password Confirmation',
-                                          [validators.Required()])
+class RegistrationForm(Form):
+    username = StringField('Username', [validators.Length(min=4, max=25)])
+    email = StringField('Email Address', [validators.Length(min=6, max=35)])
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password')
+    accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
     submit = SubmitField('Submit')
     remember = None
 
