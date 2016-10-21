@@ -1,40 +1,58 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_script import Manager
-from flask_migrate import Migrate, MigrateCommand
-
 from flask_login import UserMixin
+from . import db, login_manager
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# os.chdir('/users/maslah/documents/Python/bc-8-online-store')
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
-manager = Manager(app)
-manager.add_command('db', MigrateCommand)
-
-class User(db.Model, UserMixin):
+class Users(db.Model, UserMixin):
     '''
     Defines the user model which will be mapped
     to the user table in the db
-    ''' 
-    __tablename__ = 'user'
+    '''
+    __tablename__ = 'users'
     id = db.Column('user_id', db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
-    email = db.Column(db.String(20))
+    fname = db.Column(db.String(20))
+    lname = db.Column(db.String(20))
+    username = db.Column(db.String(50), unique=True, index=True)
+    password = db.Column(db.String(128))
+    phone = db.Column(db.String(10))
     # stores = db.relationship('Stores', backref='users')
 
     '''
-    Defines the constructor for the user class
+    Defines the constructor for the users class
     '''
-    def __init__(self, name, email):
-        self.name = fname
-        self.email= lname
+    def __init__(self, fname, lname, username, password, phone):
+        self.fname = fname
+        self.lname = lname
+        self.username = username
+        self.phone = phone
+        self.set_password(password)
 
+    def set_password(self, password_hash):
+        '''Sets password to a hashed password
+        '''
+        self.password = generate_password_hash(password_hash)
+
+    def verify_password(self, password_hash):
+        '''Checks if password matches
+        '''
+        return check_password_hash(self.password, password_hash)
+
+        '''
+        The __repr__() method is made automatically when the class is made,
+        it decides how the class is represented when it is printed
+        '''
     def __repr__(self):
-        return '<Store %r>' % self.name
+        return '<Users %r>' % self.id
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
 class Stores(db.Model):
     '''
     Defines the store model which will be mapped
@@ -42,37 +60,18 @@ class Stores(db.Model):
     '''
     __tablename__ = 'store'
     id = db.Column('store_id', db.Integer, primary_key=True)
-    Title = db.Column(db.String(20))
-    Owner =db.ForeignKey('user.user_id'))
-    is_favorite = db.BooleanField(default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    title = db.Column(db.String(100))
+    products = db.Column(db.Text)
+    users = db.relationship(
+                            Users,
+                            backref=db.backref('stores', lazy='dynamic'))
     '''
-    Defines the constructor for the store class
+    Defines the constructor for the stores class
     '''
-    def __init__(self, Title, Owner, is_favorite):
-        self.title = Title
-        self.Owner = Owner
-        self.is_favorite = is_favorite
+    def __init__(self, title, products, user_id):
+        self.title = title
+        self.products = products
 
     def __repr__(self):
         return '<Store %r>' % self.title
-
- __tablename__ = 'product'
-    id = db.Column('store_id', db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
-    Category =db.ForeignKey('store.store_id'))
-    is_favorite = db.BooleanField(default=False)
-    '''
-    Defines the constructor for the product class
-    '''
-    def __init__(self, Title, Owner, is_favorite):
-        self.name = name
-        self.Category = Category
-        self.is_favorite = is_favorite
-
-    def __repr__(self):
-        return '<Store %r>' % self.name
-
-
-
-if __name__ == '__main__':
-    manager.run()
