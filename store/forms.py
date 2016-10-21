@@ -3,23 +3,23 @@ from wtforms import StringField, TextAreaField
 from wtforms import SubmitField, validators
 
 
-class ProductForm(Form):
-    '''This class creates an ProductForm
+class StoreForm(Form):
+    '''This class creates an StoreForm
     object.
     '''
 # a store has a name and a description
-    name = StringField('Product',
-                       [validators.Required(message='Kindly enter a product.'),
+# a store belongs to a user
+    title = StringField('Store',
+                       [validators.Required)
                         validators.Length(
                            max=70,
-                           message='Your product name is too long.'
+                           message='Store title is too long.'
                        )
                        ]
                        )
-    description = TextAreaField('Product Description',
-                                [validators.required(
-                                    message='Please describe your product.')])
-    submit = SubmitField('Add Product')
+    Products = TextAreaField('Products',
+                                [validators.required])
+    submit = SubmitField('Save')
 
     def __init__(self, *args, **kwargs):
-        super(ProductForm, self).__init__(*args, **kwargs)
+        super(StoreForm, self).__init__(*args, **kwargs)
